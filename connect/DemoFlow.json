@@ -1,0 +1,299 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "Greeting",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": -220,
+      "y": -260
+    },
+    "ActionMetadata": {
+      "Transfer to Agent": {
+        "position": {
+          "x": 840,
+          "y": 260
+        },
+        "isFriendlyName": true
+      },
+      "Read Answer": {
+        "position": {
+          "x": 560,
+          "y": -260
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "SSML": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "f0a1a5ed-90c7-430b-827a-1e9b6f697b07": {
+        "position": {
+          "x": 842.4,
+          "y": 121.6
+        }
+      },
+      "Set Agent Queue": {
+        "position": {
+          "x": 570.4,
+          "y": 327.2
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "QueueId": {
+            "displayName": "BasicQueue"
+          }
+        },
+        "queue": {
+          "text": "BasicQueue"
+        }
+      },
+      "Read Error": {
+        "position": {
+          "x": 567.2,
+          "y": 120
+        },
+        "isFriendlyName": true
+      },
+      "Q&A": {
+        "position": {
+          "x": 279.2,
+          "y": -260.8
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LexV2Bot": {
+            "AliasArn": {
+              "displayName": "DemoBotAlias",
+              "useLexBotDropdown": true,
+              "lexV2BotName": "bstraehle"
+            }
+          }
+        },
+        "useLexBotDropdown": true,
+        "lexV2BotName": "bstraehle",
+        "lexV2BotAliasName": "DemoBotAlias",
+        "conditionMetadata": [
+          {
+            "id": "fbe2c972-03f5-45fd-903f-4a3a058eb71a",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "QuestionAnswering"
+          },
+          {
+            "id": "abac6664-2c46-48be-ae7d-9bf2e1e98bd6",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "Goodbye"
+          },
+          {
+            "id": "377036c2-1eb2-446d-894c-9129ce41ad69",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "FallbackIntent"
+          },
+          {
+            "id": "7895ba9e-b05d-4b45-88d9-80ed34a99dd9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "TransferToAgent"
+          },
+          {
+            "id": "abffdea9-f0e9-457c-ae12-466b3f8b807c",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "WelcomeIntent"
+          }
+        ]
+      },
+      "Greeting": {
+        "position": {
+          "x": 0,
+          "y": -260
+        },
+        "isFriendlyName": true
+      }
+    },
+    "Annotations": [],
+    "name": "DemoFlow",
+    "description": "",
+    "type": "contactFlow",
+    "status": "PUBLISHED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {},
+      "Identifier": "Transfer to Agent",
+      "Type": "TransferContactToQueue",
+      "Transitions": {
+        "NextAction": "Read Error",
+        "Errors": [
+          {
+            "NextAction": "Read Error",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "Read Error",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SSML": "$.External.body"
+      },
+      "Identifier": "Read Answer",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "Q&A",
+        "Errors": [
+          {
+            "NextAction": "Read Error",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "f0a1a5ed-90c7-430b-827a-1e9b6f697b07",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "QueueId": "arn:aws:connect:us-west-2:819097794827:instance/dd9d84a0-87a4-4755-b8f8-c920c0b49bbd/queue/3ffa5a5c-9e83-4718-bd1f-eabf3f6211a5"
+      },
+      "Identifier": "Set Agent Queue",
+      "Type": "UpdateContactTargetQueue",
+      "Transitions": {
+        "NextAction": "Transfer to Agent",
+        "Errors": [
+          {
+            "NextAction": "Read Error",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "An error has occurred."
+      },
+      "Identifier": "Read Error",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "Q&A",
+        "Errors": [
+          {
+            "NextAction": "f0a1a5ed-90c7-430b-827a-1e9b6f697b07",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "How can I help you today?",
+        "LexV2Bot": {
+          "AliasArn": "arn:aws:lex:us-west-2:819097794827:bot-alias/BWKAOWFRLW/GFO9LFVAOZ"
+        }
+      },
+      "Identifier": "Q&A",
+      "Type": "ConnectParticipantWithLexBot",
+      "Transitions": {
+        "NextAction": "Read Error",
+        "Conditions": [
+          {
+            "NextAction": "Read Answer",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "QuestionAnswering"
+              ]
+            }
+          },
+          {
+            "NextAction": "f0a1a5ed-90c7-430b-827a-1e9b6f697b07",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "Goodbye"
+              ]
+            }
+          },
+          {
+            "NextAction": "Read Answer",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "FallbackIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "Set Agent Queue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "TransferToAgent"
+              ]
+            }
+          },
+          {
+            "NextAction": "Read Answer",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "WelcomeIntent"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "Read Answer",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "Read Error",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "Hello! You are interacting with a virtual assistant that can assist you with DemoBank questions. This conversation may be recorded for training and quality purposes. Please note this assistant currently supports English only. You can ask questions like \"What are the features of your high yield savings account?\" or \"How can I open an account?\""
+      },
+      "Identifier": "Greeting",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "Q&A",
+        "Errors": [
+          {
+            "NextAction": "Read Error",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    }
+  ]
+}
