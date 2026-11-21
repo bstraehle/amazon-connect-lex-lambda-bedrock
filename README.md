@@ -1,1 +1,1 @@
-https://www.demobank.ai/
+https://www.demobank.si/
