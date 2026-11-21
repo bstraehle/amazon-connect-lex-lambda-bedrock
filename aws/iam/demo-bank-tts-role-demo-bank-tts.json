@@ -1,0 +1,50 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadElevenLabsKey",
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:us-west-2:819097794827:secret:Eleven_Labs-SJVA2t"
+    },
+    {
+      "Sid": "DecryptElevenLabsKey",
+      "Effect": "Allow",
+      "Action": "kms:Decrypt",
+      "Resource": "arn:aws:kms:us-west-2:819097794827:key/700f5e78-3e09-411a-b62b-632eab957643",
+      "Condition": {
+        "StringEquals": {
+          "kms:ViaService": "secretsmanager.us-west-2.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "ReadLastBotReply",
+      "Effect": "Allow",
+      "Action": [
+        "lex:GetSession",
+        "lex:DescribeBotAlias"
+      ],
+      "Resource": "arn:aws:lex:us-west-2:819097794827:bot-alias/BWKAOWFRLW/GFO9LFVAOZ"
+    },
+    {
+      "Sid": "ReadFixedBotReplies",
+      "Effect": "Allow",
+      "Action": [
+        "lex:ListIntents",
+        "lex:DescribeIntent"
+      ],
+      "Resource": "arn:aws:lex:us-west-2:819097794827:bot/BWKAOWFRLW"
+    },
+    {
+      "Sid": "WriteLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:us-west-2:819097794827:log-group:/aws/lambda/demo-bank-tts*"
+    }
+  ]
+}

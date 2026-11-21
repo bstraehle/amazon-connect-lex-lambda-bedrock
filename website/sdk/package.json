@@ -1,0 +1,15 @@
+{
+  "name": "demobank-lex-sdk",
+  "private": true,
+  "description": "Builds ../lex-sdk.min.js: the AWS SDK v3 pieces the DemoBank page needs (Lex runtime + anonymous Cognito credentials)",
+  "scripts": {
+    "build": "esbuild entry.mjs --bundle --format=iife --global-name=LexSdk --platform=browser --target=es2020 --minify --outfile=../lex-sdk.min.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-lex-runtime-v2": "3.1165.0",
+    "@aws-sdk/credential-provider-cognito-identity": "3.972.82"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

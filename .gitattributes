@@ -1,0 +1,8 @@
+* text=auto
+
+# Deployed files keep CRLF, so a checkout is byte-identical to what's in S3 and Lambda.
+website/** text eol=crlf
+lambda/**/*.mjs text eol=crlf
+
+*.png binary
+*.zip binary

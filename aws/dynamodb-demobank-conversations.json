@@ -1,0 +1,23 @@
+{
+  "TableName": "demobank-conversations",
+  "BillingMode": "PAY_PER_REQUEST",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "sessionId",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "sessionId",
+      "KeyType": "HASH"
+    }
+  ],
+  "SSEDescription": {
+    "Status": "DEFAULT (AWS owned key)"
+  },
+  "TimeToLive": {
+    "AttributeName": "expiresAt",
+    "Enabled": true
+  }
+}

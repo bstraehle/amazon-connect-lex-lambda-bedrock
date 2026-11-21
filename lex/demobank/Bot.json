@@ -1,0 +1,1 @@
+{"name":"demobank","version":"51","description":"FallbackIntent answers follow-up questions through the demo-bank Lambda (conversation memory)","identifier":"BWKAOWFRLW","errorLogSettings":{"enabled":false},"dataPrivacy":{"childDirected":false},"idleSessionTTLInSeconds":300}

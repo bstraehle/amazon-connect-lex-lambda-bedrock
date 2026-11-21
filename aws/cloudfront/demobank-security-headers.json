@@ -1,0 +1,38 @@
+{
+  "Comment": "Security headers for demobank.si / demobank.ai",
+  "Name": "demobank-security-headers",
+  "SecurityHeadersConfig": {
+    "XSSProtection": {},
+    "FrameOptions": {
+      "Override": true,
+      "FrameOption": "DENY"
+    },
+    "ReferrerPolicy": {
+      "Override": true,
+      "ReferrerPolicy": "strict-origin-when-cross-origin"
+    },
+    "ContentSecurityPolicy": {
+      "Override": true,
+      "ContentSecurityPolicy": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' blob: data:; connect-src https://cognito-identity.us-west-2.amazonaws.com https://runtime-v2-lex.us-west-2.amazonaws.com https://2ehgcjujhdvucdp5vhhr3n2wei0hgcza.lambda-url.us-west-2.on.aws; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    },
+    "ContentTypeOptions": {
+      "Override": true
+    },
+    "StrictTransportSecurity": {
+      "Override": true,
+      "IncludeSubdomains": false,
+      "Preload": false,
+      "AccessControlMaxAgeSec": 31536000
+    }
+  },
+  "CustomHeadersConfig": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Header": "Permissions-Policy",
+        "Value": "microphone=(self), camera=(), geolocation=()",
+        "Override": true
+      }
+    ]
+  }
+}

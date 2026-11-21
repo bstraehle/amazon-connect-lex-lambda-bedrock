@@ -1,0 +1,28 @@
+WEBVTT
+
+00:00:00.800 --> 00:00:12.848
+Welcome. This is the voicebot architecture, combining Amazon Connect Customer with a traditional speech-to-text and text-to-speech stack. Let's walk through an example request as it moves through the system.
+
+00:00:13.448 --> 00:00:16.272
+First, the caller dials the Amazon Connect number.
+
+00:00:16.872 --> 00:00:22.710
+Amazon Connect invokes ElevenLabs to provide text-to-speech using a custom voice model, which greets the caller.
+
+00:00:23.310 --> 00:00:25.147
+The caller then speaks their request.
+
+00:00:25.748 --> 00:00:30.372
+Amazon Connect uses its agentic voice capability to convert the caller's speech into text.
+
+00:00:30.972 --> 00:00:34.460
+The resulting text is passed to Amazon Lex for intent recognition.
+
+00:00:35.060 --> 00:00:46.185
+If the detected intent is a DemoBank question-answering request, Amazon Lex invokes an AWS Lambda function, which in turn calls Amazon Bedrock to generate an answer using retrieval-augmented generation.
+
+00:00:46.785 --> 00:00:54.010
+The response is then returned to Amazon Connect, which invokes ElevenLabs to convert the answer back into natural speech and deliver it to the caller.
+
+00:00:54.610 --> 00:00:59.665
+And that completes the example flow through the voicebot architecture. Thanks for watching.

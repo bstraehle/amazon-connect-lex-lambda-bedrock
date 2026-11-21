@@ -1,0 +1,18 @@
+{
+  "FunctionName": "demo-bank",
+  "Runtime": "nodejs22.x",
+  "Architectures": [
+    "x86_64"
+  ],
+  "Handler": "index.handler",
+  "MemorySize": 1024,
+  "Timeout": 30,
+  "Role": "arn:aws:iam::819097794827:role/service-role/ai-horizon-analysis-role-jj8nlat7",
+  "Environment": {
+    "MODEL_ID": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "GUARDRAIL_VERSION": "11",
+    "HISTORY_TABLE": "demobank-conversations",
+    "GUARDRAIL_ID": "6w2hf5g6l179",
+    "REFUSAL_MSG": "I can help with questions about DemoBank high yield savings accounts."
+  }
+}
