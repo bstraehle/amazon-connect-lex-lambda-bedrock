@@ -110,6 +110,6 @@ The `backup/` files below are in `C:/github/demobank/backup`, not in this repo.
 
 ## Repo
 
-- `website/**` and `lambda/**/*.mjs` are checked out with CRLF (`.gitattributes`), byte-identical to the deployed
-  files. Compare before deploying: `aws s3api get-object ... ` / `aws lambda get-function` and `cmp`.
+- `.gitattributes` pins each deployed file's line endings (CRLF for `index.html`, `app.js`, and the `demo-bank`
+  Lambda; LF for the rest), so a checkout is byte-identical to the deployed files. Compare before deploying: `aws s3api get-object ... ` / `aws lambda get-function` and `cmp`.
 - Never commit secrets: the ElevenLabs key stays in Secrets Manager (`Eleven_Labs`).
