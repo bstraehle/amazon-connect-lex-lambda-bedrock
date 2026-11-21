@@ -35,7 +35,7 @@ flowchart LR
 | [`lambda/demo-bank-tts/`](lambda/demo-bank-tts) | Lambda `demo-bank-tts` (public function URL) | Speaks the bot's last reply on the website with the same ElevenLabs voice as the phone line |
 | [`lex/`](lex) | Lex V2 bot `BWKAOWFRLW`, version 51, alias `GFO9LFVAOZ` | Bot export (LexJson): Welcome, QuestionAnswering, WhoAreYou, TransferToAgent, Goodbye, and Fallback intents |
 | [`connect/DemoFlow.json`](connect/DemoFlow.json) | Amazon Connect contact flow `DemoFlow` | Greeting, ElevenLabs voice, Lex bot, and transfer to an agent queue |
-| [`aws/`](aws) | — | Configuration for reference and rebuilds: the Bedrock guardrail (version 11), the CloudFront function and security headers policy (CSP, HSTS), IAM policies, and the DynamoDB table |
+| [`aws/`](aws) | — | Configuration for reference and rebuilds: the Bedrock guardrail (version 11), the CloudFront function and security headers policy (CSP, HSTS), IAM policies, and the DynamoDB table. The `demo-bank-role-*` files are the inline policies `demo-bank` needs on its execution role, which is shared with another function. Bedrock access is split across `BedrockInferenceAccess` (foundation models, guardrail) and `BedrockMarketplaceAccess` (the cross-region inference profile in `MODEL_ID`). |
 
 Secrets aren't in the repo. The ElevenLabs API key is in the Secrets Manager secret `Eleven_Labs`; the flow and `demo-bank-tts` only reference it.
 
