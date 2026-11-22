@@ -2,7 +2,7 @@
 
 Text/voice assistant for https://www.demobank.si (AWS account 819097794827, us-west-2).
 This repo is the source of truth for everything deployed; see README.md for the layout.
-Rollback copies (`backup/`) are kept outside the repo, in `C:/github/demobank/backup` on the maintainer's machine.
+Rollback copies (`backup/`) are kept outside the repo, in `C:/github/backups/demobank` on the maintainer's machine.
 
 ## Files
 
@@ -38,7 +38,7 @@ Not deployed to the website:
 
 Deploy the page from `website/` (Git Bash; `MSYS_NO_PATHCONV=1` is required or the invalidation path gets mangled):
 
-    aws s3api get-object --bucket demobank-virtual-assistant --key index.html C:/github/demobank/backup/index-<date>.html
+    aws s3api get-object --bucket demobank-virtual-assistant --key index.html C:/github/backups/demobank/index-<date>.html
     aws s3api put-object --bucket demobank-virtual-assistant --key app.js --body app.js --content-type text/javascript
     aws s3api put-object --bucket demobank-virtual-assistant --key lex-sdk.min.js --body lex-sdk.min.js --content-type text/javascript
     aws s3api put-object --bucket demobank-virtual-assistant --key index.html --body index.html --content-type text/html
@@ -93,7 +93,7 @@ Deploy a Lambda (zip must contain `index.mjs` at its root):
 
 ## Rollback
 
-The `backup/` files below are in `C:/github/demobank/backup`, not in this repo.
+The `backup/` files below are in `C:/github/backups/demobank`, not in this repo.
 
 - 2026-11-21 review fixes (microphone draft, refusal history, log redaction, TTS cache/budget, apex paths):
   `demo-bank` version 4 and `demo-bank-tts` version 1 hold the code from before; the previous page, Lambda zips,
