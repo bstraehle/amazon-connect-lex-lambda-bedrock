@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+# Deployed files keep their exact line endings, so a checkout is byte-identical
+# to what's in S3 and Lambda. These three use CRLF; everything else uses LF.
+website/index.html text eol=crlf
+website/app.js text eol=crlf
+lambda/demo-bank/index.mjs text eol=crlf
+
+*.png binary
+*.zip binary

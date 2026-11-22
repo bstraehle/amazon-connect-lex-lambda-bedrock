@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DemoBank</title>
+	<meta name="description" content="Ask the DemoBank virtual assistant about our high yield savings account, by text or by voice.">
+	<meta name="color-scheme" content="light dark">
+	<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+	<meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+	<link rel="canonical" href="https://www.demobank.si/">
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="DemoBank">
+	<meta property="og:title" content="DemoBank virtual assistant">
+	<meta property="og:description" content="Ask the DemoBank virtual assistant about our high yield savings account, by text or by voice.">
+	<meta property="og:url" content="https://www.demobank.si/">
+	<meta property="og:image" content="https://www.demobank.si/preview.png">
+	<meta property="og:image:width" content="1200">
+	<meta property="og:image:height" content="630">
+	<meta name="twitter:card" content="summary_large_image">
+    <link rel="shortcut icon" href="favicon.png" type="image/png" />
+    <link rel="icon" href="favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="favicon.png" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<script src="lex-sdk.min.js?v=2026-11-17" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js" integrity="sha384-948ahk4ZmxYVYOc+rxN1H2gM1EJ2Duhp7uHtZ4WSLkV4Vtx5MUqnV+l7u9B+jFv+" crossorigin="anonymous" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js" integrity="sha384-P0JNneQf81HOl9VwNXK76cQ9VMD6Nfsnepxb0cCOg8+UzEdzgPHAPV4wVQrvYQSx" crossorigin="anonymous" defer></script>
+	<script src="app.js?v=2026-11-17" defer></script>
+	<style language="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		:root {
+			--input-height: 40px;
+			color-scheme: light dark;
+			--bg: white;
+			--text: #333;
+			--muted: #555;
+			--hint: #6b7280;
+			--surface: #f8f8f8;
+			--border: #e0e0e0;
+			--border-strong: #ddd;
+			--accent: #1e40af;
+			--brand: #1e40af;
+			--brand-hover: #1e3a8a;
+			--bot-bubble: #f1f3f5;
+			--chip-bg: #eef2ff;
+			--chip-border: #c7d2fe;
+			--chip-hover: #e0e7ff;
+			--error: #b71c1c;
+			--error-bg: #fdecea;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--bg: #0f172a;
+				--text: #e2e8f0;
+				--muted: #cbd5e1;
+				--hint: #94a3b8;
+				--surface: #1e293b;
+				--border: #334155;
+				--border-strong: #475569;
+				--accent: #93c5fd;
+				--brand: #1d4ed8;
+				--brand-hover: #2563eb;
+				--bot-bubble: #1e293b;
+				--chip-bg: #172554;
+				--chip-border: #1e40af;
+				--chip-hover: #1e3a8a;
+				--error: #fca5a5;
+				--error-bg: #450a0a;
+			}
+		}
+		html {
+			height: 100%;
+			overflow: hidden;
+			background: var(--bg);
+		}
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			font-size: 14px;
+			line-height: 1.6;
+			color: var(--text);
+			background: var(--bg);
+			height: 100%;
+			min-height: 100%;
+			overflow-x: hidden;
+		}
+		@supports (height: 100dvh) {
+			html, body {
+				height: 100dvh;
+				min-height: 100dvh;
+			}
+		}
+		.container {
+			max-width: 860px;
+			margin: 0 auto;
+			padding: 20px;
+			background: var(--bg);
+			height: 100%;
+			min-height: 100%;
+			box-shadow: none;
+			display: flex;
+			flex-direction: column;
+		}
+		@supports (height: 100dvh) {
+			.container {
+				height: 100dvh;
+				min-height: 100dvh;
+			}
+		}
+		.sr-only {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			margin: -1px;
+			padding: 0;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border: 0;
+		}
+		:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+		h1 {
+			color: var(--accent);
+			font-family: 'Inter', 'Roboto', 'Arial', sans-serif;
+			font-size: 32px;
+			font-weight: 700;
+			margin-bottom: 10px;
+			text-align: center;
+			padding-bottom: 0px;
+			letter-spacing: -0.5px;
+			flex-shrink: 0;
+		}
+		.section {
+			margin-top: 10px;
+			padding: 20px;
+			background: var(--surface);
+			border-left: 4px solid var(--accent);
+			border-radius: 0 8px 8px 0;
+			flex-shrink: 0;
+		}
+		.section p {
+			font-size: 14px;
+			line-height: 1.7;
+			color: var(--muted);
+			margin: 0;
+		}
+		.section a {
+			color: var(--accent);
+			text-decoration: underline;
+			text-underline-offset: 2px;
+			border-radius: 4px;
+		}
+		#conversation {
+			width: 100%;
+			flex: 1 1 auto;
+			min-height: calc(var(--input-height, 40px) * 2);
+			max-height: none;
+			height: auto;
+			border: 2px solid var(--border);
+			background-color: var(--bg);
+			padding: 10px 10px 0px 10px;
+			overflow-y: auto;
+			scroll-behavior: smooth;
+			overscroll-behavior: contain;
+			border-radius: 8px;
+			margin: 20px 0 10px 0;
+		}
+		#suggestions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			padding: 3px;
+			margin-bottom: 7px;
+			flex-shrink: 0;
+		}
+		.suggestion {
+			padding: 5px 12px;
+			font-family: inherit;
+			font-size: 13px;
+			line-height: 1.4;
+			color: var(--accent);
+			background: var(--chip-bg);
+			border: 1px solid var(--chip-border);
+			border-radius: 999px;
+			cursor: pointer;
+			white-space: nowrap;
+			transition: all 0.3s ease;
+		}
+		.suggestion:hover {
+			background: var(--chip-hover);
+			border-color: var(--accent);
+		}
+		.suggestion[aria-disabled="true"] {
+			opacity: 0.5;
+			cursor: default;
+		}
+		#chatform {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+			flex-shrink: 0;
+		}
+		input#wisdom {
+			padding: 10px 20px;
+			color: var(--text);
+			font-size: 14px;
+			width: 100%;
+			min-width: 0;
+			font-family: inherit;
+			border: 2px solid var(--border-strong);
+			border-radius: 8px;
+			transition: border-color 0.3s ease;
+			background: var(--bg);
+		}
+		input#wisdom:focus {
+			border-color: var(--accent);
+		}
+		input#wisdom[aria-invalid="true"] {
+			border-color: var(--error);
+		}
+		input::placeholder {
+			color: var(--hint);
+			font-style: italic;
+		}
+		#inputHint {
+			min-height: 18px;
+			margin-top: 4px;
+			padding: 0 4px;
+			font-size: 12px;
+			line-height: 18px;
+			color: var(--hint);
+			flex-shrink: 0;
+		}
+		#inputHint.error {
+			color: var(--error);
+		}
+		#micButton, #muteButton, #sendButton {
+			padding: 10px 16px;
+			font-size: 18px;
+			border: 2px solid var(--border-strong);
+			border-radius: 8px;
+			background: var(--bg);
+			color: var(--muted);
+			cursor: pointer;
+			transition: all 0.3s ease;
+			flex-shrink: 0;
+			min-width: 48px;
+			height: 40px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		#micButton:hover, #muteButton:hover {
+			background: var(--surface);
+			border-color: var(--accent);
+		}
+		#micButton:disabled, #sendButton:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+		#micButton:disabled:hover {
+			background: var(--bg);
+			border-color: var(--border-strong);
+		}
+		#micButton .icon-stop, #micButton.recording .icon-mic {
+			display: none;
+		}
+		#micButton.recording .icon-stop {
+			display: block;
+		}
+		#micButton.recording {
+			background: #ec0000;
+			color: white;
+			border-color: #ec0000;
+			animation: pulse 1.2s ease-in-out infinite;
+		}
+		#muteButton .icon-speaker-on, #muteButton:not(.muted) .icon-speaker-off {
+			display: none;
+		}
+		#muteButton:not(.muted) .icon-speaker-on {
+			display: block;
+		}
+		#muteButton:not(.muted) {
+			background: var(--chip-bg);
+			color: var(--accent);
+			border-color: var(--accent);
+		}
+		#sendButton {
+			background: var(--brand);
+			color: white;
+			border-color: var(--brand);
+		}
+		#sendButton:hover:not(:disabled) {
+			background: var(--brand-hover);
+			border-color: var(--brand-hover);
+		}
+		@keyframes pulse {
+			0%, 100% {
+				opacity: 1;
+			}
+			50% {
+				opacity: 0.7;
+			}
+		}
+		.userRequest, .lexResponse, .lexError {
+			padding: 10px 14px;
+			width: fit-content;
+			max-width: 85%;
+			font-weight: 400;
+			margin-bottom: 10px;
+			overflow-wrap: anywhere;
+		}
+		.userRequest {
+			border-radius: 14px 14px 4px 14px;
+			margin-left: auto;
+			background: var(--brand);
+			color: white;
+		}
+		.lexResponse {
+			border-radius: 14px 14px 14px 4px;
+			text-align: left;
+			margin-right: auto;
+			background: var(--bot-bubble);
+			color: var(--text);
+		}
+		.lexError {
+			border-radius: 14px 14px 14px 4px;
+			text-align: left;
+			margin-right: auto;
+			background: var(--error-bg);
+			color: var(--error);
+		}
+		.lexResponse ol, .lexResponse ul {
+			padding-left: 20px;
+		}
+		.lexResponse p + p, .lexResponse p + ul, .lexResponse p + ol, .lexResponse ul + p, .lexResponse ol + p {
+			margin-top: 8px;
+		}
+		.lexResponse a {
+			color: var(--accent);
+		}
+		.typing {
+			display: flex;
+			gap: 5px;
+			align-items: center;
+			min-height: 42px;
+		}
+		.typing span {
+			width: 7px;
+			height: 7px;
+			border-radius: 50%;
+			background: var(--hint);
+			animation: typingBounce 1.2s ease-in-out infinite;
+		}
+		.typing span:nth-child(2) {
+			animation-delay: 0.15s;
+		}
+		.typing span:nth-child(3) {
+			animation-delay: 0.3s;
+		}
+		@keyframes typingBounce {
+			0%, 60%, 100% {
+				transform: translateY(0);
+				opacity: 0.4;
+			}
+			30% {
+				transform: translateY(-4px);
+				opacity: 1;
+			}
+		}
+		#videoDialog {
+			width: min(960px, calc(100vw - 32px));
+			margin: auto;
+			padding: 0;
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			background: var(--bg);
+			color: var(--text);
+			overflow: hidden;
+		}
+		#videoDialog::backdrop {
+			background: rgba(0, 0, 0, 0.6);
+		}
+		.dialogHeader {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 8px 8px 8px 16px;
+		}
+		.dialogHeader h2 {
+			font-size: 16px;
+			font-weight: 600;
+		}
+		#videoClose {
+			width: 36px;
+			height: 36px;
+			font-size: 24px;
+			line-height: 1;
+			border: none;
+			border-radius: 8px;
+			background: transparent;
+			color: var(--muted);
+			cursor: pointer;
+		}
+		#videoClose:hover {
+			background: var(--surface);
+		}
+		#architectureVideo {
+			display: block;
+			width: 100%;
+			max-height: calc(100vh - 120px);
+			background: black;
+		}
+		@media (max-width: 600px) {
+			#suggestions {
+				flex-wrap: nowrap;
+				overflow-x: auto;
+				scrollbar-width: none;
+			}
+			#suggestions::-webkit-scrollbar {
+				display: none;
+			}
+			.suggestion {
+				flex-shrink: 0;
+			}
+			#chatform {
+				gap: 6px;
+			}
+			input#wisdom {
+				padding: 10px 12px;
+			}
+			#micButton, #muteButton, #sendButton {
+				min-width: 44px;
+				padding: 10px 11px;
+			}
+		}
+		@media (prefers-reduced-motion: reduce) {
+			#conversation {
+				scroll-behavior: auto;
+			}
+			#micButton.recording, .typing span {
+				animation: none;
+			}
+		}
+	</style>
+</head>
+<body>
+    <div class="container">
+    <h1>DemoBank</h1>
+    <div class="section">
+        <p>Dial <strong><a href="tel:+14153549843" aria-label="Call our voice assistant at 1 415 354 9843">1-415-354-9843</a></strong> to <strong>speak</strong> to our virtual assistant or <strong>text</strong> with it below. This solution demonstrates a traditional <strong>speech-to-text/text-to-speech</strong> voice stack (<a href="voicebot.mp4" id="videoLink">animated narrated architecture</a>). For a modern <strong>speech-to-speech</strong> voice stack, click <a href="https://etczcqftxf.execute-api.us-east-1.amazonaws.com/"><strong>here</strong></a>.</p>
+	</div>
+	<div id="conversation" tabindex="0" role="log" aria-live="polite" aria-label="Conversation"></div>
+	<div id="chatStatus" class="sr-only" role="status"></div>
+	<div id="suggestions" role="group" aria-label="Suggested questions">
+		<button type="button" class="suggestion">What is DemoBank?</button>
+		<button type="button" class="suggestion">How do I open an account?</button>
+		<button type="button" class="suggestion">What are the account features?</button>
+		<button type="button" class="suggestion">How is interest paid?</button>
+		<button type="button" class="suggestion">How do I move money out?</button>
+		<button type="button" class="suggestion">I forgot my password</button>
+	</div>
+	<form id="chatform">
+		<label for="wisdom" class="sr-only">Your question</label>
+		<input type="text" id="wisdom" value="" placeholder="What is DemoBank?" maxlength="200" autocomplete="off" aria-describedby="inputHint" />
+		<button type="button" id="micButton" title="Speak your question" aria-label="Voice input" aria-pressed="false">
+			<svg class="icon-mic" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+				<path d="M15.7806 10.1963C16.1326 10.3011 16.3336 10.6714 16.2288 11.0234L16.1487 11.2725C15.3429 13.6262 13.2236 15.3697 10.6644 15.6299L10.6653 16.835H12.0833L12.2171 16.8486C12.5202 16.9106 12.7484 17.1786 12.7484 17.5C12.7484 17.8214 12.5202 18.0894 12.2171 18.1514L12.0833 18.165H7.91632C7.5492 18.1649 7.25128 17.8672 7.25128 17.5C7.25128 17.1328 7.5492 16.8351 7.91632 16.835H9.33527L9.33429 15.6299C6.775 15.3697 4.6558 13.6262 3.84992 11.2725L3.76984 11.0234L3.74445 10.8906C3.71751 10.5825 3.91011 10.2879 4.21808 10.1963C4.52615 10.1047 4.84769 10.2466 4.99347 10.5195L5.04523 10.6436L5.10871 10.8418C5.8047 12.8745 7.73211 14.335 9.99933 14.335C12.3396 14.3349 14.3179 12.7789 14.9534 10.6436L15.0052 10.5195C15.151 10.2466 15.4725 10.1046 15.7806 10.1963ZM12.2513 5.41699C12.2513 4.17354 11.2437 3.16521 10.0003 3.16504C8.75675 3.16504 7.74835 4.17343 7.74835 5.41699V9.16699C7.74853 10.4104 8.75685 11.418 10.0003 11.418C11.2436 11.4178 12.2511 10.4103 12.2513 9.16699V5.41699ZM13.5814 9.16699C13.5812 11.1448 11.9781 12.7479 10.0003 12.748C8.02232 12.748 6.41845 11.1449 6.41828 9.16699V5.41699C6.41828 3.43889 8.02221 1.83496 10.0003 1.83496C11.9783 1.83514 13.5814 3.439 13.5814 5.41699V9.16699Z"></path>
+			</svg>
+			<svg class="icon-stop" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+				<rect x="5" y="5" width="10" height="10" rx="2"></rect>
+			</svg>
+		</button>
+		<button type="button" id="muteButton" class="muted" title="Read replies aloud: off" aria-label="Read replies aloud" aria-pressed="false">
+			<svg class="icon-speaker-on" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+				<path d="M12 3L6 7H3V13H6L12 17V3Z"></path>
+				<path d="M14 7C14.5 7.5 15 8.5 15 10C15 11.5 14.5 12.5 14 13M16 5C17 6 18 8 18 10C18 12 17 14 16 15" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"></path>
+			</svg>
+			<svg class="icon-speaker-off" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+				<path d="M12 3L6 7H3V13H6L12 17V3Z"></path>
+				<path d="M14.5 7.5L18.5 12.5M18.5 7.5L14.5 12.5" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"></path>
+			</svg>
+		</button>
+		<button type="submit" id="sendButton" title="Send" aria-label="Send" disabled>
+			<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+				<path d="M2.5 3L18 10L2.5 17L4.5 11L12 10L4.5 9L2.5 3Z"></path>
+			</svg>
+		</button>
+	</form>
+	<p id="inputHint" role="status"></p>
+    </div>
+	<dialog id="videoDialog" aria-labelledby="videoTitle">
+		<div class="dialogBody">
+			<div class="dialogHeader">
+				<h2 id="videoTitle">Voicebot architecture</h2>
+				<button type="button" id="videoClose" aria-label="Close video">&times;</button>
+			</div>
+			<video id="architectureVideo" controls preload="none" playsinline>
+				<source src="voicebot.mp4" type="video/mp4">
+				<track kind="captions" src="voicebot.vtt" srclang="en" label="English" default>
+			</video>
+		</div>
+	</dialog>
+</body>
+</html>

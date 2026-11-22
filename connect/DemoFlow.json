@@ -1,12 +1,38 @@
 {
   "Version": "2019-10-30",
-  "StartAction": "Greeting",
+  "StartAction": "64b31483-5115-4a48-8102-c86df680214d",
   "Metadata": {
     "entryPointPosition": {
-      "x": -220,
-      "y": -260
+      "x": -572.8,
+      "y": -339.2
     },
     "ActionMetadata": {
+      "81d99b5c-74bd-40b4-8f99-c28fbe637a75": {
+        "position": {
+          "x": -244.8,
+          "y": -110.4
+        },
+        "children": [
+          "ea6c10cf-834d-4a8e-907a-fcda028615f2"
+        ],
+        "parameters": {
+          "TextToSpeechEngine": {
+            "voiceProvider": "elevenlabs"
+          }
+        },
+        "overrideConsoleVoice": true,
+        "fragments": {
+          "SetContactData": "ea6c10cf-834d-4a8e-907a-fcda028615f2"
+        },
+        "overrideLanguageAttribute": true
+      },
+      "ea6c10cf-834d-4a8e-907a-fcda028615f2": {
+        "position": {
+          "x": -244.8,
+          "y": -110.4
+        },
+        "dynamicParams": []
+      },
       "Transfer to Agent": {
         "position": {
           "x": 840,
@@ -14,10 +40,16 @@
         },
         "isFriendlyName": true
       },
+      "f0a1a5ed-90c7-430b-827a-1e9b6f697b07": {
+        "position": {
+          "x": 842.4,
+          "y": 121.6
+        }
+      },
       "Read Answer": {
         "position": {
-          "x": 560,
-          "y": -260
+          "x": 630.4,
+          "y": -347.2
         },
         "isFriendlyName": true,
         "parameters": {
@@ -26,12 +58,6 @@
           }
         },
         "useDynamic": true
-      },
-      "f0a1a5ed-90c7-430b-827a-1e9b6f697b07": {
-        "position": {
-          "x": 842.4,
-          "y": 121.6
-        }
       },
       "Set Agent Queue": {
         "position": {
@@ -48,17 +74,10 @@
           "text": "BasicQueue"
         }
       },
-      "Read Error": {
-        "position": {
-          "x": 567.2,
-          "y": 120
-        },
-        "isFriendlyName": true
-      },
       "Q&A": {
         "position": {
-          "x": 279.2,
-          "y": -260.8
+          "x": 288.8,
+          "y": -349.6
         },
         "isFriendlyName": true,
         "parameters": {
@@ -75,7 +94,7 @@
         "lexV2BotAliasName": "DemoBotAlias",
         "conditionMetadata": [
           {
-            "id": "fbe2c972-03f5-45fd-903f-4a3a058eb71a",
+            "id": "20efa013-74ee-466c-a255-858721da7f0b",
             "operator": {
               "name": "Equals",
               "value": "Equals",
@@ -84,7 +103,7 @@
             "value": "QuestionAnswering"
           },
           {
-            "id": "abac6664-2c46-48be-ae7d-9bf2e1e98bd6",
+            "id": "110834bc-1ee7-47f5-8b00-1f7b00b84212",
             "operator": {
               "name": "Equals",
               "value": "Equals",
@@ -93,7 +112,7 @@
             "value": "Goodbye"
           },
           {
-            "id": "377036c2-1eb2-446d-894c-9129ce41ad69",
+            "id": "ffe98fbe-2e9c-413a-932b-cf2481159e78",
             "operator": {
               "name": "Equals",
               "value": "Equals",
@@ -102,7 +121,7 @@
             "value": "FallbackIntent"
           },
           {
-            "id": "7895ba9e-b05d-4b45-88d9-80ed34a99dd9",
+            "id": "7f90f778-b7b3-4061-96ba-5b884924be9b",
             "operator": {
               "name": "Equals",
               "value": "Equals",
@@ -111,7 +130,7 @@
             "value": "TransferToAgent"
           },
           {
-            "id": "abffdea9-f0e9-457c-ae12-466b3f8b807c",
+            "id": "b0c13a2d-f8b1-44b0-99b3-2b523411e472",
             "operator": {
               "name": "Equals",
               "value": "Equals",
@@ -121,22 +140,64 @@
           }
         ]
       },
+      "64b31483-5115-4a48-8102-c86df680214d": {
+        "position": {
+          "x": -471.2,
+          "y": -338.4
+        }
+      },
+      "Read Error": {
+        "position": {
+          "x": 567.2,
+          "y": 120
+        },
+        "isFriendlyName": true
+      },
       "Greeting": {
         "position": {
-          "x": 0,
-          "y": -260
+          "x": -19.2,
+          "y": -347.2
         },
         "isFriendlyName": true
       }
     },
-    "Annotations": [],
-    "name": "DemoFlow",
-    "description": "",
-    "type": "contactFlow",
-    "status": "PUBLISHED",
-    "hash": {}
+    "Annotations": []
   },
   "Actions": [
+    {
+      "Parameters": {
+        "TextToSpeechEngine": "elevenlabs:eleven_v3",
+        "TextToSpeechVoice": "AYZwqKNJgPfbTjp3GbCG",
+        "ExternalCredentialSecretARN": "arn:aws:secretsmanager:us-west-2:819097794827:secret:Eleven_Labs-SJVA2t"
+      },
+      "Identifier": "81d99b5c-74bd-40b4-8f99-c28fbe637a75",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Transitions": {
+        "NextAction": "ea6c10cf-834d-4a8e-907a-fcda028615f2",
+        "Errors": [
+          {
+            "NextAction": "Read Error",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LanguageCode": "en-US"
+      },
+      "Identifier": "ea6c10cf-834d-4a8e-907a-fcda028615f2",
+      "Type": "UpdateContactData",
+      "Transitions": {
+        "NextAction": "Greeting",
+        "Errors": [
+          {
+            "NextAction": "Read Error",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
     {
       "Parameters": {},
       "Identifier": "Transfer to Agent",
@@ -156,6 +217,12 @@
       }
     },
     {
+      "Parameters": {},
+      "Identifier": "f0a1a5ed-90c7-430b-827a-1e9b6f697b07",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
       "Parameters": {
         "SSML": "$.External.body"
       },
@@ -170,12 +237,6 @@
           }
         ]
       }
-    },
-    {
-      "Parameters": {},
-      "Identifier": "f0a1a5ed-90c7-430b-827a-1e9b6f697b07",
-      "Type": "DisconnectParticipant",
-      "Transitions": {}
     },
     {
       "Parameters": {
@@ -195,23 +256,7 @@
     },
     {
       "Parameters": {
-        "Text": "An error has occurred."
-      },
-      "Identifier": "Read Error",
-      "Type": "MessageParticipant",
-      "Transitions": {
-        "NextAction": "Q&A",
-        "Errors": [
-          {
-            "NextAction": "f0a1a5ed-90c7-430b-827a-1e9b6f697b07",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {
-        "Text": "How can I help you today?",
+        "Text": "What would you like to know?",
         "LexV2Bot": {
           "AliasArn": "arn:aws:lex:us-west-2:819097794827:bot-alias/BWKAOWFRLW/GFO9LFVAOZ"
         }
@@ -281,7 +326,33 @@
     },
     {
       "Parameters": {
-        "Text": "Hello! You are interacting with a virtual assistant that can assist you with DemoBank questions. This conversation may be recorded for training and quality purposes. Please note this assistant currently supports English only. You can ask questions like \"What are the features of your high yield savings account?\" or \"How can I open an account?\""
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "64b31483-5115-4a48-8102-c86df680214d",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "81d99b5c-74bd-40b4-8f99-c28fbe637a75"
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "An error has occurred."
+      },
+      "Identifier": "Read Error",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "Q&A",
+        "Errors": [
+          {
+            "NextAction": "f0a1a5ed-90c7-430b-827a-1e9b6f697b07",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "Hi! I can help with questions about DemoBank high yield savings accounts. You can ask questions like \"When will my funds be available?\" or \"What is my interest rate?\""
       },
       "Identifier": "Greeting",
       "Type": "MessageParticipant",

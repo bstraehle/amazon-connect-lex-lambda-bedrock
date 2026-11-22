@@ -1,0 +1,368 @@
+{
+  "name": "DemoBank",
+  "description": "Password filter no longer masks answers (it masked the 'Forgot password' link name); input unchanged",
+  "guardrailId": "6w2hf5g6l179",
+  "guardrailArn": "arn:aws:bedrock:us-west-2:819097794827:guardrail/6w2hf5g6l179",
+  "version": "11",
+  "status": "READY",
+  "topicPolicy": {
+    "topics": [
+      {
+        "name": "Investment advice",
+        "definition": "Investment advice refers to inquiries, guidance, or recommendations regarding the management or allocation of funds or assets with the goal of generating returns.",
+        "examples": [],
+        "type": "DENY",
+        "inputAction": "BLOCK",
+        "outputAction": "BLOCK",
+        "inputEnabled": true,
+        "outputEnabled": true
+      }
+    ],
+    "tier": {
+      "tierName": "STANDARD"
+    }
+  },
+  "contentPolicy": {
+    "filters": [
+      {
+        "type": "VIOLENCE",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM",
+        "inputAction": "BLOCK",
+        "outputAction": "BLOCK"
+      },
+      {
+        "type": "PROMPT_ATTACK",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "NONE",
+        "inputAction": "BLOCK"
+      },
+      {
+        "type": "MISCONDUCT",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM",
+        "inputAction": "BLOCK",
+        "outputAction": "BLOCK"
+      },
+      {
+        "type": "HATE",
+        "inputStrength": "LOW",
+        "outputStrength": "LOW",
+        "inputAction": "BLOCK",
+        "outputAction": "BLOCK"
+      },
+      {
+        "type": "SEXUAL",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM",
+        "inputAction": "BLOCK",
+        "outputAction": "BLOCK"
+      },
+      {
+        "type": "INSULTS",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM",
+        "inputAction": "BLOCK",
+        "outputAction": "BLOCK"
+      }
+    ],
+    "tier": {
+      "tierName": "STANDARD"
+    }
+  },
+  "wordPolicy": {
+    "words": [
+      {
+        "text": "Bank of America",
+        "inputAction": "BLOCK",
+        "outputAction": "BLOCK",
+        "inputEnabled": true,
+        "outputEnabled": true
+      }
+    ],
+    "managedWordLists": [
+      {
+        "type": "PROFANITY",
+        "inputAction": "BLOCK",
+        "outputAction": "BLOCK",
+        "inputEnabled": true,
+        "outputEnabled": true
+      }
+    ]
+  },
+  "sensitiveInformationPolicy": {
+    "piiEntities": [
+      {
+        "type": "NAME",
+        "action": "ANONYMIZE",
+        "inputAction": "NONE",
+        "outputAction": "NONE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "PHONE",
+        "action": "ANONYMIZE",
+        "inputAction": "NONE",
+        "outputAction": "NONE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "EMAIL",
+        "action": "ANONYMIZE",
+        "inputAction": "NONE",
+        "outputAction": "NONE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "ADDRESS",
+        "action": "ANONYMIZE",
+        "inputAction": "NONE",
+        "outputAction": "NONE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "AGE",
+        "action": "ANONYMIZE",
+        "inputAction": "NONE",
+        "outputAction": "NONE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "USERNAME",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "PASSWORD",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "NONE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "DRIVER_ID",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "LICENSE_PLATE",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "VEHICLE_IDENTIFICATION_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "CREDIT_DEBIT_CARD_CVV",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "CREDIT_DEBIT_CARD_EXPIRY",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "CREDIT_DEBIT_CARD_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "PIN",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "INTERNATIONAL_BANK_ACCOUNT_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "SWIFT_CODE",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "IP_ADDRESS",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "MAC_ADDRESS",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "URL",
+        "action": "ANONYMIZE",
+        "inputAction": "NONE",
+        "outputAction": "NONE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "AWS_ACCESS_KEY",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "AWS_SECRET_KEY",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "US_PASSPORT_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "US_SOCIAL_SECURITY_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "US_INDIVIDUAL_TAX_IDENTIFICATION_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "US_BANK_ACCOUNT_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "US_BANK_ROUTING_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "CA_HEALTH_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "CA_SOCIAL_INSURANCE_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "UK_UNIQUE_TAXPAYER_REFERENCE_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "UK_NATIONAL_INSURANCE_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      },
+      {
+        "type": "UK_NATIONAL_HEALTH_SERVICE_NUMBER",
+        "action": "ANONYMIZE",
+        "inputAction": "ANONYMIZE",
+        "outputAction": "ANONYMIZE",
+        "inputEnabled": true,
+        "outputEnabled": true
+      }
+    ],
+    "regexes": []
+  },
+  "contextualGroundingPolicy": {
+    "filters": [
+      {
+        "type": "GROUNDING",
+        "threshold": 0.7,
+        "action": "BLOCK",
+        "enabled": true
+      },
+      {
+        "type": "RELEVANCE",
+        "threshold": 0.7,
+        "action": "BLOCK",
+        "enabled": true
+      }
+    ]
+  },
+  "crossRegionDetails": {
+    "guardrailProfileId": "us.guardrail.v1:0",
+    "guardrailProfileArn": "arn:aws:bedrock:us-west-2:819097794827:guardrail-profile/us.guardrail.v1:0"
+  },
+  "blockedInputMessaging": "I can help with questions about DemoBank high yield savings accounts.",
+  "blockedOutputsMessaging": "I can help with questions about DemoBank high yield savings accounts."
+}

@@ -1,0 +1,38 @@
+{
+  "FunctionName": "demo-bank-tts",
+  "Runtime": "nodejs22.x",
+  "Architectures": [
+    "x86_64"
+  ],
+  "Handler": "index.handler",
+  "MemorySize": 256,
+  "Timeout": 30,
+  "Role": "arn:aws:iam::819097794827:role/demo-bank-tts-role",
+  "Environment": {
+    "MODEL_ID": "eleven_v3",
+    "BOT_ALIAS_ID": "GFO9LFVAOZ",
+    "BOT_ID": "BWKAOWFRLW",
+    "SECRET_ID": "Eleven_Labs",
+    "LOCALE_ID": "en_US",
+    "PART_CHARS": "220",
+    "VOICE_ID": "AYZwqKNJgPfbTjp3GbCG"
+  },
+  "ReservedConcurrentExecutions": 2,
+  "FunctionUrl": {
+    "FunctionUrl": "https://2ehgcjujhdvucdp5vhhr3n2wei0hgcza.lambda-url.us-west-2.on.aws/",
+    "AuthType": "NONE",
+    "InvokeMode": "BUFFERED",
+    "Cors": {
+      "AllowMethods": [
+        "GET"
+      ],
+      "AllowOrigins": [
+        "https://www.demobank.si",
+        "https://demobank.si",
+        "https://www.demobank.ai",
+        "https://demobank.ai"
+      ],
+      "MaxAge": 86400
+    }
+  }
+}

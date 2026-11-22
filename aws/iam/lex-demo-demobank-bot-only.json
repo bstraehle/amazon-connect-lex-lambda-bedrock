@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TalkToDemoBankBot",
+      "Effect": "Allow",
+      "Action": [
+        "lex:RecognizeText",
+        "lex:RecognizeUtterance"
+      ],
+      "Resource": "arn:aws:lex:us-west-2:819097794827:bot-alias/BWKAOWFRLW/GFO9LFVAOZ"
+    }
+  ]
+}
