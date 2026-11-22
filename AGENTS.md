@@ -28,8 +28,8 @@ Not deployed to the website:
 ## Hosting
 
 - S3 bucket `demobank-virtual-assistant` (no versioning) behind CloudFront distribution `EKNGTSQVBSF70`
-  (www.demobank.si, www.demobank.ai; the apex domains redirect to www via the CloudFront function
-  `apex-to-www-redirect-demobank`).
+  (www.demobank.si, www.demobank.ai; the apex domains redirect to www, keeping path and query, via the CloudFront
+  function `apex-to-www-redirect-demobank`, source in `aws/cloudfront/`).
 - Response headers policy `demobank-security-headers` adds CSP, HSTS, nosniff, X-Frame-Options, Referrer-Policy
   and Permissions-Policy. `X-Content-Type-Options: nosniff` means every upload needs the right content type.
 - The CSP lists every host the page talks to. A new CDN, API endpoint or inline script will be blocked until
@@ -64,8 +64,13 @@ returning visitors keep the copy cached by their browser.
   - Bedrock guardrail `6w2hf5g6l179` (`DemoBank`), version 11, set in the Lambda's `GUARDRAIL_VERSION`.
     The PASSWORD filter masks user input only: on answers it replaced the bolded link name
     "**Forgot password**" with `{PASSWORD}` (it started doing so on 2026-11-18 with no configuration change).
-    If a `{SOMETHING}` placeholder shows up in an answer, check the guardrail trace in the Lambda log
-    (`responseBody` holds both the model's text and the matched entity), and test wording with `ApplyGuardrail`.
+    If a `{SOMETHING}` placeholder shows up in an answer, set the Lambda variable `LOG_GUARDRAIL_TRACE=true`
+    for a moment: interventions then log the full guardrail trace (the matched entity and the model's text). Remove it
+    afterwards, because the trace can contain what the user typed (e.g. a password). Test wording with `ApplyGuardrail`.
+  - Logs hold only metadata (intent, input mode, question length, stop reason, guardrail action, token usage) and the
+    answer as sent; never the question. Lex conversation logs (`/aws/lex/BWKAOWFRLW`) still hold transcripts.
+  - Refusals (the model's "I cannot help with this" and the guardrail's blocked message, equal to `REFUSAL_MSG`) are
+    not stored as history.
   - Its execution role is shared with the `ai-horizon-analysis` Lambda; the inline policy
     `demobank-conversation-history` grants access to that one table.
 - Lambda `demo-bank-tts` (public function URL, CORS limited to the site origins) speaks the bot's last reply
@@ -75,6 +80,9 @@ returning visitors keep the copy cached by their browser.
     the function reads the intent's configured response from the bot definition.
   - Reserved concurrency is 2 on purpose: the ElevenLabs plan allows 3 concurrent requests and the phone line
     shares them.
+  - Synthesized audio is cached in memory (LRU, 32 MB) by model, voice, and text, so replays and the fixed replies
+    don't hit ElevenLabs again. New syntheses are limited per client IP to `SYNTHESES_PER_HOUR` (default 60, per
+    instance); beyond that the function returns 429 and the page falls back to the browser's voice.
   - Do not switch the function URL to response streaming: a client that disconnects mid-stream keeps a
     concurrency slot busy for about 3 minutes.
 
@@ -86,6 +94,9 @@ Deploy a Lambda (zip must contain `index.mjs` at its root):
 
 The `backup/` files below are in `C:/github/demobank/backup`, not in this repo.
 
+- 2026-11-21 review fixes (microphone draft, refusal history, log redaction, TTS cache/budget, apex paths):
+  `demo-bank` version 4 and `demo-bank-tts` version 1 hold the code from before; the previous page, Lambda zips,
+  and CloudFront function are in `backup/*-2026-11-21.*`.
 - Page: re-upload a file from `backup/index-*.html` and invalidate. `index-2026-10-04.html` is the original
   single-file page (it needs the security headers policy detached, because it uses inline scripts).
 - `demo-bank` Lambda: version 1 and `backup/demo-bank-2026-10-17.zip` hold the code from before conversation memory.

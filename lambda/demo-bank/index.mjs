@@ -205,7 +205,8 @@ export const handler = async (event) => {
     let response;
 
     if (question !== undefined && question !== "") {
-      console.log("Bedrock request: ", question);
+      // Only metadata: the transcript can hold secrets (e.g. a password) before the guardrail masks them.
+      console.log("Bedrock request:", intentName, inputMode, question.length, "characters");
 
       const history = await loadHistory(event?.sessionId);
 
@@ -307,11 +308,18 @@ async function answer(question, inputMode, history) {
   });
   const response = await bedrockClient.send(command);
   const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-  console.log('responseBody:', JSON.stringify(responseBody, null, 2));
+  const guardrailAction = responseBody["amazon-bedrock-guardrailAction"];
+  console.log("Bedrock result:", responseBody.stop_reason, "guardrail", guardrailAction || "NONE", JSON.stringify(responseBody.usage || {}));
+  // The trace contains the matched values (e.g. a password); only log it while troubleshooting.
+  if (guardrailAction === "INTERVENED" && process.env.LOG_GUARDRAIL_TRACE === "true") {
+    console.log("Guardrail trace:", JSON.stringify(responseBody["amazon-bedrock-trace"]));
+  }
 
   // Post-process
   var responseText = responseBody.content[0].text;
-  if (!responseText.includes("I cannot help with this")) {
+  // Refusals are not answers: neither the model's nor the guardrail's blocked message (which equals REFUSAL_MSG).
+  // Keeping them would let a following FallbackIntent reach Bedrock without a real previous answer.
+  if (!responseText.includes("I cannot help with this") && responseText.trim() !== process.env.REFUSAL_MSG) {
     history.push({ q: question, a: responseText });
   }
   responseText = await postProcess(responseText, inputMode);

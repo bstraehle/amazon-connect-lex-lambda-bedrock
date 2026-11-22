@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 import { LexRuntimeV2Client, GetSessionCommand } from "@aws-sdk/client-lex-runtime-v2";
 import { LexModelsV2Client, DescribeBotAliasCommand, ListIntentsCommand, DescribeIntentCommand } from "@aws-sdk/client-lex-models-v2";
@@ -11,6 +12,11 @@ const DEFAULT_ENDPOINT = "https://api.elevenlabs.io";
 const MAX_CHARS = 2000;
 const PART_CHARS = Number(process.env.PART_CHARS) || 220;
 const STATIC_REPLIES_TTL_MS = 10 * 60 * 1000;
+// Synthesized audio is reused (e.g. replays and the fixed greeting) instead of paying ElevenLabs again.
+const AUDIO_CACHE_MAX_BYTES = 32 * 1024 * 1024;
+// New syntheses per client IP and hour; cache hits are free. Per instance (reserved concurrency is 2).
+const SYNTHESES_PER_HOUR = Number(process.env.SYNTHESES_PER_HOUR) || 60;
+const BUDGET_WINDOW_MS = 60 * 60 * 1000;
 
 const secretsClient = new SecretsManagerClient({});
 const lexClient = new LexRuntimeV2Client({});
@@ -18,6 +24,9 @@ const modelsClient = new LexModelsV2Client({});
 
 var credentials;
 var staticReplies;
+const audioCache = new Map();
+var audioCacheBytes = 0;
+const budgets = new Map();
 
 /**
  * Lambda handler (function URL): speak one part of the bot's last reply in a Lex session
@@ -36,8 +45,24 @@ export const handler = async (event) => {
       return part === 0 ? jsonResponse(404, "Nothing to say") : { statusCode: 204 };
     }
 
-    console.log("ElevenLabs request: part", part + 1, "of", parts.length, "-", parts[part].length, "characters");
-    const audio = await synthesize(pronounce(parts[part]));
+    const text = pronounce(parts[part]);
+    const key = createHash("sha256").update(JSON.stringify([process.env.MODEL_ID, process.env.VOICE_ID, text])).digest("hex");
+    var audio = cachedAudio(key);
+    if (audio) {
+      console.log("ElevenLabs cache hit: part", part + 1, "of", parts.length);
+    } else {
+      if (!withinBudget(event?.requestContext?.http?.sourceIp)) {
+        console.log("ElevenLabs budget exceeded: part", part + 1, "of", parts.length);
+        return {
+          statusCode: 429,
+          headers: { "Content-Type": "application/json", "Cache-Control": "no-store", "Retry-After": "3600" },
+          body: JSON.stringify({ message: "Too many speech requests" })
+        };
+      }
+      console.log("ElevenLabs request: part", part + 1, "of", parts.length, "-", parts[part].length, "characters");
+      audio = await synthesize(text);
+      cacheAudio(key, audio);
+    }
 
     return {
       statusCode: 200,
@@ -54,6 +79,62 @@ export const handler = async (event) => {
     return jsonResponse(502, "Speech is unavailable");
   }
 };
+
+/**
+ * Get cached audio, and mark it as recently used
+ * @param {string} key - Hash of model, voice, and text
+ */
+function cachedAudio(key) {
+  const audio = audioCache.get(key);
+  if (audio) {
+    audioCache.delete(key);
+    audioCache.set(key, audio);
+  }
+  return audio;
+}
+
+/**
+ * Cache audio, evicting the least recently used entries beyond the size limit
+ * @param {string} key - Hash of model, voice, and text
+ * @param {Buffer} audio - MP3 audio
+ */
+function cacheAudio(key, audio) {
+  if (audio.length > AUDIO_CACHE_MAX_BYTES) {
+    return;
+  }
+  audioCache.set(key, audio);
+  audioCacheBytes += audio.length;
+  for (const [oldKey, oldAudio] of audioCache) {
+    if (audioCacheBytes <= AUDIO_CACHE_MAX_BYTES) {
+      break;
+    }
+    audioCache.delete(oldKey);
+    audioCacheBytes -= oldAudio.length;
+  }
+}
+
+/**
+ * Count a new synthesis against the caller's hourly budget
+ * @param {string|undefined} ip - The client IP
+ */
+function withinBudget(ip) {
+  const now = Date.now();
+  if (budgets.size > 10000) {
+    for (const [oldIp, budget] of budgets) {
+      if (now - budget.start >= BUDGET_WINDOW_MS) {
+        budgets.delete(oldIp);
+      }
+    }
+  }
+  const id = ip || "unknown";
+  var budget = budgets.get(id);
+  if (!budget || now - budget.start >= BUDGET_WINDOW_MS) {
+    budget = { start: now, count: 0 };
+    budgets.set(id, budget);
+  }
+  budget.count += 1;
+  return budget.count <= SYNTHESES_PER_HOUR;
+}
 
 /**
  * Build a JSON response
