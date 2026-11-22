@@ -810,12 +810,17 @@ function initSpeechRecognition() {
 	}
 	
 	recognitionSupported = true;
+	var recognitionDraft = '';
+	var recognitionHeard = false;
 	recognition = new SpeechRecognition();
 	recognition.continuous = false;
 	recognition.interimResults = true;
 	recognition.lang = 'en-US';
 	
 	recognition.onstart = function() {
+		var wisdomInput = document.getElementById('wisdom');
+		recognitionDraft = wisdomInput ? wisdomInput.value : '';
+		recognitionHeard = false;
 		setMicState(true);
 		showHint('Listening...');
 	};
@@ -828,6 +833,7 @@ function initSpeechRecognition() {
 		
 		var wisdomInput = document.getElementById('wisdom');
 		if (wisdomInput && transcript) {
+			recognitionHeard = true;
 			wisdomInput.value = transcript;
 			updateInputHint();
 		}
@@ -853,10 +859,15 @@ function initSpeechRecognition() {
 			showHint('');
 		}
 		var wisdomInput = document.getElementById('wisdom');
-		if (wisdomInput) {
-			if (wisdomInput.value && wisdomInput.value.trim() && !isBusy) {
-				pushChat();
-			}
+		if (!wisdomInput) {
+			return;
+		}
+		// Only send what was just said; a run without speech leaves a typed draft alone.
+		if (!recognitionHeard) {
+			wisdomInput.value = recognitionDraft;
+			updateInputHint();
+		} else if (wisdomInput.value.trim() && !isBusy) {
+			pushChat();
 		}
 	};
 }
