@@ -81,8 +81,9 @@ returning visitors keep the copy cached by their browser.
   - Reserved concurrency is 2 on purpose: the ElevenLabs plan allows 3 concurrent requests and the phone line
     shares them.
   - Synthesized audio is cached in memory (LRU, 32 MB) by model, voice, and text, so replays and the fixed replies
-    don't hit ElevenLabs again. New syntheses are limited per client IP to `SYNTHESES_PER_HOUR` (default 60, per
-    instance); beyond that the function returns 429 and the page falls back to the browser's voice.
+    don't hit ElevenLabs again. Newly spoken replies are limited per client IP to `SPOKEN_REPLIES_PER_HOUR` (default 20,
+    per instance); every part of an admitted reply is spoken. Beyond the limit the function returns 429 for the reply's
+    first part and the page falls back to the browser's voice.
   - Do not switch the function URL to response streaming: a client that disconnects mid-stream keeps a
     concurrency slot busy for about 3 minutes.
 

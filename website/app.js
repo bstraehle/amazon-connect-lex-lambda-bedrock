@@ -810,7 +810,6 @@ function initSpeechRecognition() {
 	}
 	
 	recognitionSupported = true;
-	var recognitionDraft = '';
 	var recognitionHeard = false;
 	recognition = new SpeechRecognition();
 	recognition.continuous = false;
@@ -818,8 +817,6 @@ function initSpeechRecognition() {
 	recognition.lang = 'en-US';
 	
 	recognition.onstart = function() {
-		var wisdomInput = document.getElementById('wisdom');
-		recognitionDraft = wisdomInput ? wisdomInput.value : '';
 		recognitionHeard = false;
 		setMicState(true);
 		showHint('Listening...');
@@ -862,11 +859,8 @@ function initSpeechRecognition() {
 		if (!wisdomInput) {
 			return;
 		}
-		// Only send what was just said; a run without speech leaves a typed draft alone.
-		if (!recognitionHeard) {
-			wisdomInput.value = recognitionDraft;
-			updateInputHint();
-		} else if (wisdomInput.value.trim() && !isBusy) {
+		// Only send what was just said; a run without speech leaves the input as the user left it.
+		if (recognitionHeard && wisdomInput.value.trim() && !isBusy) {
 			pushChat();
 		}
 	};

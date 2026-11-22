@@ -14,8 +14,9 @@ const PART_CHARS = Number(process.env.PART_CHARS) || 220;
 const STATIC_REPLIES_TTL_MS = 10 * 60 * 1000;
 // Synthesized audio is reused (e.g. replays and the fixed greeting) instead of paying ElevenLabs again.
 const AUDIO_CACHE_MAX_BYTES = 32 * 1024 * 1024;
-// New syntheses per client IP and hour; cache hits are free. Per instance (reserved concurrency is 2).
-const SYNTHESES_PER_HOUR = Number(process.env.SYNTHESES_PER_HOUR) || 60;
+// Newly spoken replies per client IP and hour; cache hits are free, and every part of an admitted reply is
+// spoken, so replies don't stop midway. Per instance (reserved concurrency is 2).
+const SPOKEN_REPLIES_PER_HOUR = Number(process.env.SPOKEN_REPLIES_PER_HOUR) || 20;
 const BUDGET_WINDOW_MS = 60 * 60 * 1000;
 
 const secretsClient = new SecretsManagerClient({});
@@ -27,6 +28,7 @@ var staticReplies;
 const audioCache = new Map();
 var audioCacheBytes = 0;
 const budgets = new Map();
+const admittedReplies = new Map();
 
 /**
  * Lambda handler (function URL): speak one part of the bot's last reply in a Lex session
@@ -51,7 +53,8 @@ export const handler = async (event) => {
     if (audio) {
       console.log("ElevenLabs cache hit: part", part + 1, "of", parts.length);
     } else {
-      if (!withinBudget(event?.requestContext?.http?.sourceIp)) {
+      const replyKey = createHash("sha256").update(JSON.stringify([sessionId, parts])).digest("hex");
+      if (!withinBudget(event?.requestContext?.http?.sourceIp, replyKey)) {
         console.log("ElevenLabs budget exceeded: part", part + 1, "of", parts.length);
         return {
           statusCode: 429,
@@ -114,11 +117,23 @@ function cacheAudio(key, audio) {
 }
 
 /**
- * Count a new synthesis against the caller's hourly budget
+ * Count a newly spoken reply against the caller's hourly budget; later parts of an admitted reply are free
  * @param {string|undefined} ip - The client IP
+ * @param {string} replyKey - Hash of the session ID and the reply's parts
  */
-function withinBudget(ip) {
+function withinBudget(ip, replyKey) {
   const now = Date.now();
+  const admitted = admittedReplies.get(replyKey);
+  if (admitted && now - admitted < BUDGET_WINDOW_MS) {
+    return true;
+  }
+  if (admittedReplies.size > 10000) {
+    for (const [oldKey, time] of admittedReplies) {
+      if (now - time >= BUDGET_WINDOW_MS) {
+        admittedReplies.delete(oldKey);
+      }
+    }
+  }
   if (budgets.size > 10000) {
     for (const [oldIp, budget] of budgets) {
       if (now - budget.start >= BUDGET_WINDOW_MS) {
@@ -132,8 +147,12 @@ function withinBudget(ip) {
     budget = { start: now, count: 0 };
     budgets.set(id, budget);
   }
+  if (budget.count >= SPOKEN_REPLIES_PER_HOUR) {
+    return false;
+  }
   budget.count += 1;
-  return budget.count <= SYNTHESES_PER_HOUR;
+  admittedReplies.set(replyKey, now);
+  return true;
 }
 
 /**
